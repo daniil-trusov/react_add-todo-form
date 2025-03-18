@@ -1,25 +1,30 @@
 import './App.scss';
 import { useState } from 'react';
 
+import usersFromServer from './api/users';
 import todosFromServer from './api/todos';
 
 import { ToDo } from './types/ToDo';
 
-import { userById } from './services/userById';
 import { TodoList } from './components/TodoList';
 import { TodoForm } from './components/TodoForm';
 import { getTodoId } from './services/getTodoId';
+import { getUserById } from './services/getUserById';
 
 const todos: ToDo[] = todosFromServer.map(todo => ({
   ...todo,
-  user: userById(todo.userId),
+  user: getUserById(todo.userId),
 }));
 
 export const App = () => {
   const [visibleTodos, setVisibleTodos] = useState<ToDo[]>(todos);
 
   const addTodo = (todo: ToDo) => {
-    const newTodo = { ...todo, id: getTodoId(todos) };
+    const newTodo = {
+      ...todo,
+      id: getTodoId(todos),
+      user: getUserById(todo.userId),
+    };
 
     setVisibleTodos(currentTodos => [...currentTodos, newTodo]);
   };
@@ -28,7 +33,7 @@ export const App = () => {
     <div className="App">
       <h1>Add todo form</h1>
 
-      <TodoForm onAdd={addTodo} />
+      <TodoForm userOptions={usersFromServer} onAdd={addTodo} />
 
       <TodoList todos={visibleTodos} />
     </div>

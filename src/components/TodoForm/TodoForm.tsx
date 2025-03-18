@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { ToDo } from '../../types/ToDo';
-
-import usersFromServer from '../../api/users';
 import { User } from '../../types/User';
-import { userById } from '../../services/userById';
 
 type Props = {
+  userOptions: User[];
   onAdd: (todo: ToDo) => void;
 };
 
-export const TodoForm: React.FC<Props> = ({ onAdd }) => {
+export const TodoForm: React.FC<Props> = ({ userOptions, onAdd }) => {
   const [title, setTitle] = useState('');
   const [userId, setUserId] = useState(0);
   const [hasTitleError, setHasTitleError] = useState(false);
@@ -48,7 +46,7 @@ export const TodoForm: React.FC<Props> = ({ onAdd }) => {
       title,
       completed: false,
       userId,
-      user: userById(userId),
+      user: null,
     });
 
     reset();
@@ -66,7 +64,6 @@ export const TodoForm: React.FC<Props> = ({ onAdd }) => {
           type="text"
           data-cy="titleInput"
           placeholder="enter ToDo title"
-          defaultValue={0}
           value={title}
           onChange={handleTitleChange}
         />
@@ -81,7 +78,7 @@ export const TodoForm: React.FC<Props> = ({ onAdd }) => {
           onChange={handleUserIdChange}
         >
           <option value="0">Choose a user</option>
-          {usersFromServer.map((user: User) => (
+          {userOptions.map((user: User) => (
             <option key={user.id} value={user.id}>
               {user.name}
             </option>
